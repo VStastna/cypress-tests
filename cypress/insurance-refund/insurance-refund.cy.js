@@ -1,58 +1,13 @@
-/**
- * Intercept GET request to 'passenger_details' as 'passengerDetails'.
- *
- * @param {string} bookingId
- */
-export const interceptPassengerDetails = bookingId => {
-    cy.intercept('GET', `${Cypress.env('BFF_BASE_URL')}/bookings/${bookingId}/passenger_details`).as(
-        'passengerDetails',
-    )
-}
-
-/**
- * Intercept GET request to the main booking call as 'booking'.
- *
- * @param {string} bookingId
- */
-export const interceptBooking = bookingId => {
-    cy.intercept('GET', `${Cypress.env('BOOKING_DETAILS_BASE_URL')}/bookings/${bookingId}?**`).as(
-        'booking',
-    )
-}
-
-/**
- * Intercepts PUT request to 'orders' as 'orders'.
- *
- * @param {string} bookingId
- */
-
-export const interceptOrders = bookingId => {
-    cy.intercept('PUT', `${Cypress.env('PAYMENTS_BASE_URL')}?booking_id=${bookingId}`).as('orders')
-}
-export const DEFAULT_ADULT = {
-    birthday: '1996-06-06',
-    category: 'adult',
-    ...DEFAULT_DOCUMENT,
-    email: 'mmbcypress@kiwi.com',
-    name: 'TEST',
-    surname: 'TEST',
-    title: 'ms',
-    nationality: 'fr',
-    phone: '+33 55555555',
-    passenger_ancillaries: { ...DEFAULT_PASSENGER_ANCILLARIES, axa_insurance: null },
-}
-
 import { getBookingWithCondition, loadPage } from '../../../support/helpers'
-//import {
-//    interceptAncillariesOffersCheck,
-//    interceptBooking,
-//    interceptOrders,
-//    interceptPassengerDetails,
-//} from '../../../support/intercept'
-import { FILTERS } from '../../../support/utils'
-//import { DEFAULT_ADULT, DEFAULT_BOOKING_ANCILLARIES } from '../../../support/data'
+import {
+    interceptAncillariesOffersCheck,
+    interceptBooking,
+    interceptOrders,
+    interceptPassengerDetails,
+} from '/support/helpers/intercept.js'
+import { FILTERS } from 'support/helpers/filters.js'
+import { DEFAULT_ADULT } from 'support/helpers/consts.js'
 const BOOKING_DATA = {
-    booking_ancillaries: DEFAULT_BOOKING_ANCILLARIES,
     booking_passengers: [
         {
             ...DEFAULT_ADULT,
@@ -210,7 +165,7 @@ describe('Insurance - Successful refund', () => {
                                 .and('contain', 'None selected')
                         })
                 })
-                
+
                 cy.step('C4010439 Correct Insurance level is pre-selected for a purchase')
                 cy.findByTestId('InsuranceCard').within(() => {
                     cy.findByRole('link', { name: 'Manage' }).should('be.visible').click()

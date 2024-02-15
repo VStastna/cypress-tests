@@ -1,54 +1,12 @@
-export const CHECKIN_STATUS = {
-    PROCESSING: 'processing',
-    PROVIDE_APAXI: 'provide_apaxi',
-    PROVIDE_DETAILS: 'provide_details',
-    UNAVAILABLE: 'unavailable',
-    WAITING_FOR_APAXI: 'waiting_for_apaxi',
-    WAITING_FOR_CHECKIN: 'waiting_for_checkin',
-    WAITING_FOR_DETAILS: 'waiting_for_details',
-}
-/**
- * Intercept GET request to 'bookings' as 'bookingDetails'.
- *
- * @param {string} bookingId
- */
-export const interceptBookingDetails = bookingId => {
-    cy.intercept({
-        method: 'GET',
-        url: `${Cypress.env('BFF_BASE_URL')}/bookings/${bookingId}?**`,
-        times: 1,
-    }).as('bookingDetails')
-}
-/**
- * Intercept POST request to the 'check-in' call as 'checkInDetails'.
- *
- * @param {string} bookingId
- */
-export const interceptCheckInDetails = bookingId => {
-    cy.intercept('POST', `${Cypress.env('BFF_BASE_URL')}/bookings/${bookingId}/check-in`).as(
-        'checkInDetails',
-    )
-}
-/**
- * Intercept GET request to 'passenger_details' as 'passengerDetails'.
- *
- * @param {string} bookingId
- */
-export const interceptPassengerDetails = bookingId => {
-    cy.intercept('GET', `${Cypress.env('BFF_BASE_URL')}/bookings/${bookingId}/passenger_details`).as(
-        'passengerDetails',
-    )
-}
-
 import { checkCheckInStatus, checkHealthDeclarationRequirement } from '../../../support/apiClients'
-//import { CHECKIN_STATUS } from '../../../support/data'
+import { CHECKIN_STATUS } from 'support/helpers/consts.js'
 import { getBookingWithCondition, loadPage } from '../../../support/helpers'
-//import {
-//   interceptBookingDetails,
-//    interceptCheckInDetails,
-//    interceptPassengerDetails,
-//} from '../../../support/intercept'
-import { FILTERS, formatDate } from '../../../support/utils'
+import {
+    interceptBookingDetails,
+    interceptCheckInDetails,
+    interceptPassengerDetails,
+} from 'support/helpers/intercept.js'
+import { FILTERS, formatDate } from 'support/helpers/filters.js'
 describe('Online check-in for an Apaxi booking - Declaration and passport submission', () => {
     it('C628621, C516948, C570020, C1724865, C254695, C2270725, C628619, C1449828, C234553, C628623, C516949, C4023057 - Successfully confirm Health declaration and submit passport details for an online check-in', () => {
         getBookingWithCondition({
@@ -264,6 +222,7 @@ describe('Online check-in for an Apaxi booking - Declaration and passport submis
             interceptBookingDetails(bookingId)
             cy.log('Return to MMB')
             cy.findByRole('link', { name: 'Back to my trip' }).should('be.visible').click()
+
             /**
              * Checking if the Check-in status is correct after confirming Health declaration/adding passport details.
              */
@@ -285,6 +244,7 @@ describe('Online check-in for an Apaxi booking - Declaration and passport submis
                 )
                 cy.findByTestId('BookingContent').should('be.visible')
                 cy.findByTestId('CheckInBanner').should('not.exist')
+
                 cy.step('C516949 Check-in & Boarding passes section shows correct final status')
                 cy.findByTestId('BoardingPasses')
                     .should('be.visible')

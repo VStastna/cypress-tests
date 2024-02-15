@@ -1,50 +1,10 @@
-const DEEPLINKS = {
-    SEATING: 'seating',
-    INVOICES: 'invoices',
-}
-
-/**
- * Intercept GET request to 'bookings' as 'bookingDetails'.
- *
- * @param {string} bookingId
- */
-const interceptBookingDetails = bookingId => {
-    cy.intercept({
-        method: 'GET',
-        url: `${Cypress.env('BFF_BASE_URL')}/bookings/${bookingId}?**`,
-        times: 1,
-    }).as('bookingDetails')
-}
-
-/**
- * Intercept GET request to 'invoices' as 'invoices'.
- *
- * @param {string} bookingId
- */
-const interceptInvoices = bookingId => {
-    cy.intercept('GET', `${Cypress.env('BFF_BASE_URL')}/bookings/${bookingId}/invoices?**`).as(
-        'invoices',
-    )
-}
-
-/**
- * Intercept GET request to 'seating_summary' call as 'seatingSummary'.
- *
- * @param {string} bookingId
- */
-export const interceptSeatingSummary = bookingId => {
-    cy.intercept('GET', `${Cypress.env('BFF_BASE_URL')}/bookings/${bookingId}/seating_summary?**`).as(
-        'seatingSummary',
-    )
-}
-
-//import { DEEPLINKS } from '../../support/data'
+import { DEEPLINKS } from 'support/helpers/consts.js'
 import { getBookingWithCondition, loadPage } from '../../support/helpers'
-//import {
-//    interceptBookingDetails,
-//    interceptInvoices,
-//    interceptSeatingSummary,
-//} from '../../support/intercept'
+import {
+    interceptBookingDetails,
+    interceptInvoices,
+    interceptSeatingSummary,
+} from 'support/helpers/intercept.js'
 describe('Deeplinks', () => {
     it('C3687093 - Visit MMB of a confirmed booking with the "invoice" deeplink in the url', () => {
         getBookingWithCondition().then(({ bookingId, simpleToken }) => {
@@ -84,8 +44,8 @@ describe('Deeplinks', () => {
             cy.wait('@bookingDetails').then(details => {
                 const seating =
                     details.response.body.booking_details.additional_services.services_data.seating
-                if (!seating) {
 
+                if (!seating) {
                     cy.step(
                         'C3721802 Seating deeplink does not redirect to MMB2 Seating page when the service is not available at all',
                     )
