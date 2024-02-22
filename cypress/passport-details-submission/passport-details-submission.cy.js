@@ -7,11 +7,11 @@ import {
     interceptPassengerDetails,
 } from 'support/helpers/intercept.js'
 import { FILTERS, formatDate } from 'support/helpers/filters.js'
-describe('Online check-in for an Apaxi booking - Declaration and passport submission', () => {
+describe('Online check-in - Declaration and passport submission', () => {
     it('C628621, C516948, C570020, C1724865, C254695, C2270725, C628619, C1449828, C234553, C628623, C516949, C4023057 - Successfully confirm Health declaration and submit passport details for an online check-in', () => {
         getBookingWithCondition({
             conditions: [
-                FILTERS.CHECK_IN_APAXI_WITHOUT_PASSPORT_DETAILS_SUBMITTED,
+                FILTERS.CHECK_IN_WITHOUT_PASSPORT_DETAILS_SUBMITTED,
                 FILTERS.SINGLE_PASSENGER,
             ],
             origin: 'EDI',
@@ -24,7 +24,7 @@ describe('Online check-in for an Apaxi booking - Declaration and passport submis
             checkCheckInStatus({
                 bookingId,
                 simpleToken,
-                expectedStatus: [CHECKIN_STATUS.PROVIDE_APAXI, CHECKIN_STATUS.WAITING_FOR_APAXI],
+                expectedStatus: [CHECKIN_STATUS.PROVIDE_AP, CHECKIN_STATUS.WAITING_FOR_AP],
             })
             loadPage({
                 bookingId,
@@ -36,11 +36,11 @@ describe('Online check-in for an Apaxi booking - Declaration and passport submis
                     cy.wait('@bookingDetails').then(bookingDetails => {
                         expect(bookingDetails.response.statusCode).eq(200)
                         const { segments } = bookingDetails.response.body.booking_details.boarding_passes
-                        const numberOfSegmentsWithProvideApaxiStatus = segments.filter(
-                            segment => segment.status === CHECKIN_STATUS.PROVIDE_APAXI,
+                        const numberOfSegmentsWithProvideStatus = segments.filter(
+                            segment => segment.status === CHECKIN_STATUS.PROVIDE_AP,
                         ).length
-                        const numberOfSegmentsWithWaitingForApaxiStatus = segments.filter(
-                            segment => segment.status === CHECKIN_STATUS.WAITING_FOR_APAXI,
+                        const numberOfSegmentsWithWaitingForStatus = segments.filter(
+                            segment => segment.status === CHECKIN_STATUS.WAITING_FOR_AP,
                         ).length
 
                         cy.step(
@@ -56,16 +56,16 @@ describe('Online check-in for an Apaxi booking - Declaration and passport submis
                         cy.findByTestId('BoardingPasses')
                             .should('be.visible')
                             .within(() => {
-                                if (numberOfSegmentsWithProvideApaxiStatus) {
-                                    cy.findAllByTestId('BoardingPassHeaderBadge-provide_apaxi')
+                                if (numberOfSegmentsWithProvideApStatus) {
+                                    cy.findAllByTestId('BoardingPassHeaderBadge-provide_ap')
                                         .should('be.visible')
-                                        .and('have.length', numberOfSegmentsWithProvideApaxiStatus)
+                                        .and('have.length', numberOfSegmentsWithProvideApStatus)
                                         .and('contain', 'Details required for 1/1 passengers')
                                 }
-                                if (numberOfSegmentsWithWaitingForApaxiStatus) {
-                                    cy.findAllByTestId('BoardingPassHeaderBadge-waiting_for_apaxi')
+                                if (numberOfSegmentsWithWaitingForApStatus) {
+                                    cy.findAllByTestId('BoardingPassHeaderBadge-waiting_for_ap')
                                         .should('be.visible')
-                                        .and('have.length', numberOfSegmentsWithWaitingForApaxiStatus)
+                                        .and('have.length', numberOfSegmentsWithWaitingForApStatus)
                                         .and('contain', 'Details required for 1/1 passengers')
                                 }
                             })
@@ -105,7 +105,7 @@ describe('Online check-in for an Apaxi booking - Declaration and passport submis
                     cy.findByRole('link', { name: 'My trip' }).should('be.visible').click()
 
                     cy.step(
-                        'C1724865 Users are offered extras before they are taken to the MMB2 Check-in page',
+                        'C1724865 Users are offered extras before they are taken to the Check-in page',
                     )
                     cy.findByRole('button', { name: 'Add check-in details' }).should('be.visible').click()
                     cy.findByTestId('CheckInMonetizationModal')
@@ -182,7 +182,7 @@ describe('Online check-in for an Apaxi booking - Declaration and passport submis
                     cy.findByTestId('DocumentNumberInput').should('have.attr', 'data-state', 'error')
                     cy.findByTestId('DateInput').should('have.attr', 'data-state', 'error')
 
-                    cy.step('C234553 Passport details are added and submitted on the MMB2 Check-in page')
+                    cy.step('C234553 Passport details are added and submitted on the Check-in page')
                     cy.contains('[data-test=PassengersTravelDocument]', 'TEST TEST')
                         .should('be.visible')
                         .within(() => {
@@ -220,7 +220,7 @@ describe('Online check-in for an Apaxi booking - Declaration and passport submis
                 timeout: 40000,
             }).should('be.visible')
             interceptBookingDetails(bookingId)
-            cy.log('Return to MMB')
+            cy.log('Return to Manage Booking')
             cy.findByRole('link', { name: 'Back to my trip' }).should('be.visible').click()
 
             /**
@@ -230,7 +230,7 @@ describe('Online check-in for an Apaxi booking - Declaration and passport submis
                 const { segments } = bookingDetails.response.body.booking_details.boarding_passes
                 expect(bookingDetails.response.statusCode).to.eq(200)
                 expect(
-                    segments.filter(segment => segment.status === CHECKIN_STATUS.PROVIDE_APAXI),
+                    segments.filter(segment => segment.status === CHECKIN_STATUS.PROVIDE_AP),
                 ).to.have.length(0)
                 const numberOfSegmentsWithWaitingForCheckinStatus = segments.filter(
                     segment => segment.status === CHECKIN_STATUS.WAITING_FOR_CHECKIN,
@@ -261,7 +261,7 @@ describe('Online check-in for an Apaxi booking - Declaration and passport submis
                                 .and('have.length', numberOfSegmentsWithProcessingStatus)
                                 .and('contain', 'Processing check-in')
                         }
-                        cy.findByTestId('BoardingPassHeaderBadge-provide_apaxi').should('not.exist')
+                        cy.findByTestId('BoardingPassHeaderBadge-provide_ap').should('not.exist')
                     })
             })
 

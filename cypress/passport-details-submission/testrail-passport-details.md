@@ -53,7 +53,7 @@ And the user wishes to read the Health declaration information again
 When the user clicks the 'Back' button  
 Then the user is taken to the Health declaration page again
 
-C234553 Passport details are added and submitted on the MMB2 check-in page  
+C234553 Passport details are added and submitted on the Check-in page  
 Given a user is on the Manage Booking check-in page  
 When the user fills in the passport details  
 And the user submits them for check-in  

@@ -6,10 +6,10 @@ import {
     interceptSeatingSummary,
 } from 'support/helpers/intercept.js'
 describe('Deeplinks', () => {
-    it('C3687093 - Visit MMB of a confirmed booking with the "invoice" deeplink in the url', () => {
+    it('C3687093 - Visit Manage Booking of a confirmed booking with the "invoice" deeplink in the url', () => {
         getBookingWithCondition().then(({ bookingId, simpleToken }) => {
             interceptInvoices(bookingId)
-            /** After the MMB url with an 'invoices' deeplink is fully loaded, user is immediately redirected to MMB2. */
+            /** After the Manage Booking url with an 'invoices' deeplink is fully loaded, user is immediately redirected to the Invoice page. */
             loadPage({
                 bookingId,
                 deeplink: DEEPLINKS.INVOICES,
@@ -17,7 +17,7 @@ describe('Deeplinks', () => {
                 checkPage: false,
             })
 
-            cy.step('C3687093 Invoices deeplink redirects user to the MMB2 Invoices page')
+            cy.step('C3687093 Invoices deeplink redirects user to the Invoices page')
             cy.location('pathname').should('eq', `/en/trips/${bookingId}/invoices/`)
             cy.findByRole('heading', { name: 'Invoices' }).should('be.visible')
 
@@ -29,11 +29,11 @@ describe('Deeplinks', () => {
         })
     })
 
-    it('C3692434, C3687094, C3721802 - Visit MMB of a confirmed booking with the "seating" deeplink in the url', () => {
+    it('C3692434, C3687094, C3721802 - Visit Manage Booking of a confirmed booking with the "seating" deeplink in the url', () => {
         getBookingWithCondition().then(({ bookingId, simpleToken }) => {
             interceptBookingDetails(bookingId)
             interceptSeatingSummary(bookingId)
-            /** After the MMB url with a 'seating' deeplink is fully loaded, user is immediately redirected to MMB2. */
+            /** After the Manage Booking url with a 'seating' deeplink is fully loaded, user is immediately redirected to Seating page. */
             loadPage({
                 bookingId,
                 deeplink: DEEPLINKS.SEATING,
@@ -47,7 +47,7 @@ describe('Deeplinks', () => {
 
                 if (!seating) {
                     cy.step(
-                        'C3721802 Seating deeplink does not redirect to MMB2 Seating page when the service is not available at all',
+                        'C3721802 Seating deeplink does not redirect to the Seating page when the service is not available at all',
                     )
                     cy.location('pathname').should('eq', `/en/manage/${bookingId}`)
                     cy.findByTestId('ServiceUnavailableDeeplinkFallbackModal')
@@ -57,7 +57,7 @@ describe('Deeplinks', () => {
                         })
                 } else if (seating.status === 'too_late_to_order') {
                     cy.step(
-                        'C3692434 Seating deeplink does not redirect to MMB2 Seating page when seating is no longer available for purchase',
+                        'C3692434 Seating deeplink does not redirect to the Seating page when seating is no longer available for purchase',
                     )
                     cy.location('pathname').should('eq', `/en/manage/${bookingId}`)
                     cy.findByTestId('ServiceTooLateToOrderModal')
@@ -68,7 +68,7 @@ describe('Deeplinks', () => {
                             }).should('be.visible')
                         })
                 } else {
-                    cy.step('C3687094 Seating deeplink redirects user to the MMB2 Seating page')
+                    cy.step('C3687094 Seating deeplink redirects user to the Seating page')
                     cy.location('pathname').should('eq', `/en/trips/${bookingId}/seating/`)
                     cy.findByRole('heading', { name: 'Select your seating' }).should('be.visible')
 

@@ -3,7 +3,7 @@ Given a user has a confirmed booking
 When the user visits the Manage Booking page with the 'invoices' deeplink in the url  
 Then the user is redirected to the Invoices page
 
-C3692434 Seating deeplink does not redirect to Seating page when seating is no longer available for purchase  
+C3692434 Seating deeplink does not redirect to the Seating page when seating is no longer available for purchase  
 Given the seating is no longer available for the confirmed booking  
 When the user visits Manage Booking with the 'seating' deeplink in the url  
 Then the user is not redirected to the Seating page  

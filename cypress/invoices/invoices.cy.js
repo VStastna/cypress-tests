@@ -34,7 +34,7 @@ describe('Invoices', () => {
                                     .should('be.visible')
                                     .within(() => {
                                         cy.findByRole('heading', {
-                                            name: INVOICE_TYPE[invoiceCategory].displayTextMMB2,
+                                            name: INVOICE_TYPE[invoiceCategory].displayText,
                                         }).should('be.visible')
 
                                         cy.step('C5072780 User can download their Invoice')
@@ -45,7 +45,7 @@ describe('Invoices', () => {
                                     })
                             })
 
-                        cy.log('Return to MMB')
+                        cy.log('Return to Manage Booking')
                         cy.findByRole('link', { name: 'My trip' }).should('be.visible').click()
                         cy.location('pathname').should('eq', `/en/manage/${bookingId}/`)
                         cy.findByTestId('BookingHeader').should('be.visible')
